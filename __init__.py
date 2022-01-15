@@ -97,6 +97,7 @@ class node_bake_target(bpy.types.Operator):
                 if node.prop_mode == "image" and node.prop_target_image:
                     img = node.prop_target_image
                     img.source = "GENERATED"
+                    img.colorspace_settings.name = node.prop_target_image_colorspace
                     texture_node.image = img
                     texture_node.select = True
                     nodes.active = texture_node
@@ -184,6 +185,17 @@ class BakeTargetNode(bpy.types.ShaderNode):
     # == Image mode properties ==
     # Target image block
     prop_target_image: bpy.props.PointerProperty(type=bpy.types.Image)
+    # Target image colorspace
+    prop_target_image_colorspace: bpy.props.EnumProperty(
+        items=[
+            ("Filmic Log", "Filmic Log", "Log based filmic shaper with 16.5 stops of latitude, and 25 stops of dynamic range."),
+            ("Linear", "Linear", "Rec. 709 (Full Range), Blender native linear space."),
+            ("Linear ACES", "Linear ACES", "ACES linear space."),
+            ("Non-Color", "Non-Color", "Color space used for images which contains non-color data."),
+            ("Raw", "Raw", "Raw."),
+            ("sRGB", "sRGB", "Standard RGB Display Space."),
+            ("XYZ", "XYZ", "XYZ."),
+        ], name="Colorspace", default="sRGB")
     # Output file
     prop_target_file: bpy.props.StringProperty(
         name="Output", description="Write the resulting image to a file", subtype="FILE_PATH")
@@ -206,6 +218,7 @@ class BakeTargetNode(bpy.types.ShaderNode):
         layout.prop(self, "prop_mode")
         if self.prop_mode == "image":
             layout.template_ID(self, "prop_target_image", new="image.new", open="image.open")
+            layout.prop(self, "prop_target_image_colorspace")
             row = layout.row()
             row.prop(self, "prop_target_file")
             row.prop(self, "prop_target_file_object")
