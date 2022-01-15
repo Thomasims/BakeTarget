@@ -5,6 +5,8 @@ This Blender Addon adds a new shader node type capable of reducing the texture-b
 
 Please note that this is *not* a polished addon, it is designed to work around one problem and not much else.
 
+![image](https://user-images.githubusercontent.com/3007463/149631301-e50e437b-67b7-4c82-95c3-3696ebad521c.png)
+
 ## Usage
 The node is found under `Add > Bake > Bake to Target`
 It has only one input, `Color`, and the following parameters:
