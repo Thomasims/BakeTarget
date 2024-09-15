@@ -13,6 +13,11 @@ def get_active_output(nodes):
     for node in nodes:
         if node.type == "OUTPUT_MATERIAL" and node.is_active_output:
             return node
+        if node.type == "GROUP":
+            rec = get_active_output(node.node_tree.nodes)
+            if rec != None:
+                return rec
+    return None
 
 
 def editfilepath(filepath, extra):
@@ -29,13 +34,16 @@ bakesettings = {
     "use_pass_color": True,
     "use_pass_direct": False,
     "use_pass_indirect": False,
-    "use_selected_to_active": False
+    "use_selected_to_active": False,
+    "target": "IMAGE_TEXTURES"
 }
 
 cyclessettings = {
-    "use_denoising": False,
+    "use_adaptive_sampling": False,
     "samples": 1,
-    "time_limit": 1
+    "time_limit": 1,
+    "use_denoising": False,
+    "bake_type": "DIFFUSE",
 }
 
 
@@ -92,6 +100,7 @@ class node_bake_target(bpy.types.Operator):
             try:
                 if previous_output:
                     previous_output.is_active_output = False
+                    previous_output.mute = True
                 output_node.is_active_output = True
 
                 if node.prop_mode == "image" and node.prop_target_image:
@@ -136,6 +145,7 @@ class node_bake_target(bpy.types.Operator):
                 nodes.remove(output_node)
                 if previous_output:
                     previous_output.is_active_output = True
+                    previous_output.mute = False
                 bpy.context.view_layer.objects.active = prevobj
 
         return {"FINISHED"}
